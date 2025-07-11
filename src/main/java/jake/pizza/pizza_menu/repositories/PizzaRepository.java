@@ -10,4 +10,8 @@ import jake.pizza.pizza_menu.models.Pizza;
 public interface PizzaRepository {
 
     public List<Pizza> findAll();
+
+    public List<Pizza> saveAll(List<Pizza> pizzaList);
+
+    public long deleteAll();
 }
