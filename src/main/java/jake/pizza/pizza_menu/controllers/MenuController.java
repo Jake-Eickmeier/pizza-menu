@@ -1,13 +1,13 @@
 package jake.pizza.pizza_menu.controllers;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jake.pizza.pizza_menu.dtos.PizzaDTO;
 import jake.pizza.pizza_menu.services.PizzaMenuService;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.beans.factory.annotation.Autowired;
-import java.util.List;
 
 @RestController
 public class MenuController {
@@ -23,7 +23,7 @@ public class MenuController {
         return new String("Hello ");
     }
 
-    @GetMapping("/test/mongoDb")
+    @GetMapping("/pizza/menu")
     public List<PizzaDTO> getAllPizzas() {
         return pizzaMenuService.findAll();
     }
