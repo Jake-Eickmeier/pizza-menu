@@ -1,7 +1,6 @@
 package jake.pizza.pizza_menu.repositories;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -18,10 +17,6 @@ public interface PizzaRepository {
     public List<Pizza> saveAll(List<Pizza> pizzaList);
 
     public long deleteAll();
-
-    public Map<String, List<Pizza>> getWeeklyPizzaSpecials();
-    
-    public List<Pizza> getDailyPizzaSpecials();
 
     public List<Pizza> getMenuWithFilter(PizzaTag pizzaTag);
 }

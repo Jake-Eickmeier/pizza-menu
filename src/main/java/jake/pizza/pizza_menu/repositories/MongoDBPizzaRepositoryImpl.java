@@ -2,12 +2,9 @@ package jake.pizza.pizza_menu.repositories;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.mongodb.ReadConcern;
@@ -70,18 +67,6 @@ public class MongoDBPizzaRepositoryImpl implements PizzaRepository {
             return clientSession.withTransaction(
                     () -> pizzaCollection.deleteMany(clientSession, new BsonDocument()).getDeletedCount(), txnOptions);
         }
-    }
-
-    @Override
-    public Map<String, List<Pizza>> getWeeklyPizzaSpecials() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getWeeklyPizzaSpecials'");
-    }
-
-    @Override
-    public List<Pizza> getDailyPizzaSpecials() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDailyPizzaSpecials'");
     }
 
     @Override
