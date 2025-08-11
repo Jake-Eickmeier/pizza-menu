@@ -11,11 +11,11 @@ import jake.pizza.pizza_menu.models.Pizza;
 @Component
 public class MenuTestHelper {
     Pizza getPepperoniPizza() {
-        return new Pizza(new ObjectId(), "pepperoni", List.of("cheese", "pepperoni"));
+        return new Pizza(new ObjectId(), "pepperoni", List.of("cheese", "pepperoni"), 1199, null);
     }
 
     Pizza getCheesePizza() {
-        return new Pizza(new ObjectId(), "cheese", List.of("cheese"));
+        return new Pizza(new ObjectId(), "cheese", List.of("cheese"), 1099, null);
     }
 
     List<Pizza> getListOfPizzas() {

@@ -12,13 +12,19 @@ public class Pizza {
 
     private List<String> toppings;
 
+    private int priceInCents;
+
+    private List<PizzaTag> tags;
+
     public Pizza() {
     }
 
-    public Pizza(ObjectId objectId, String name, List<String> toppings) {
+    public Pizza(ObjectId objectId, String name, List<String> toppings, int priceInCents, List<PizzaTag> tags) {
         this.id = objectId;
         this.name = name;
         this.toppings = toppings;
+        this.priceInCents = priceInCents;
+        this.tags = tags;
     }
 
     @Override
@@ -38,6 +44,14 @@ public class Pizza {
         return toppings;
     }
 
+    public int getPriceInCents() {
+        return priceInCents;
+    }
+
+    public List<PizzaTag> getTags() {
+        return tags;
+    }
+
     public void setId(ObjectId id) {
         this.id = id;
     }
@@ -48,5 +62,13 @@ public class Pizza {
 
     public void setToppings(List<String> toppings) {
         this.toppings = toppings;
+    }
+
+    public void setPriceInCents(int priceInCents) {
+        this.priceInCents = priceInCents;
+    }
+
+    public void setTags(List<PizzaTag> tags) {
+        this.tags = tags;
     }
 }

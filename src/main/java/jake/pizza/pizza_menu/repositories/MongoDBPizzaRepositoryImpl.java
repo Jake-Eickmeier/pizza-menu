@@ -2,9 +2,12 @@ package jake.pizza.pizza_menu.repositories;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.bson.BsonDocument;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.mongodb.ReadConcern;
@@ -14,9 +17,11 @@ import com.mongodb.WriteConcern;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 
 import jakarta.annotation.PostConstruct;
 import jake.pizza.pizza_menu.models.Pizza;
+import jake.pizza.pizza_menu.models.PizzaTag;
 
 @Repository
 public class MongoDBPizzaRepositoryImpl implements PizzaRepository {
@@ -44,6 +49,11 @@ public class MongoDBPizzaRepositoryImpl implements PizzaRepository {
     }
 
     @Override
+    public Pizza findById(final String id) {
+        return pizzaCollection.find(Filters.eq("_id", new ObjectId(id))).first();
+    }
+
+    @Override
     public List<Pizza> saveAll(List<Pizza> pizzaList) {
         try (ClientSession clientSession = client.startSession()) {
             return clientSession.withTransaction(() -> {
@@ -60,6 +70,23 @@ public class MongoDBPizzaRepositoryImpl implements PizzaRepository {
             return clientSession.withTransaction(
                     () -> pizzaCollection.deleteMany(clientSession, new BsonDocument()).getDeletedCount(), txnOptions);
         }
+    }
+
+    @Override
+    public Map<String, List<Pizza>> getWeeklyPizzaSpecials() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getWeeklyPizzaSpecials'");
+    }
+
+    @Override
+    public List<Pizza> getDailyPizzaSpecials() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDailyPizzaSpecials'");
+    }
+
+    @Override
+    public List<Pizza> getMenuWithFilter(PizzaTag pizzaTag) {
+        return pizzaCollection.find(Filters.in("tags", pizzaTag)).into(new ArrayList<>());
     }
 
 }
