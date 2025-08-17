@@ -37,7 +37,7 @@ public class PizzaSpecial {
     @Override
     public String toString() {
         // TODO: Add a formatter to include decimal and consider a more useful implementation in general
-        return String.format("% pizza, On sale for %s on %s", pizzaId.toHexString(), String.valueOf(newPriceInCents), specialDay.toString());
+        return String.format("%s pizza, On sale for %s on %s", pizzaId.toHexString(), String.valueOf(newPriceInCents), specialDay.toString());
     }
 
     public ObjectId getId() {
