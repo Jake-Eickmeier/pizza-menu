@@ -33,8 +33,8 @@ public class MenuController {
     }
 
     @GetMapping("/pizza/specials/daily")
-    public List<MatchedPizzaSpecialDTO> getAllDailyPizzaSpecials() {
-        return pizzaMenuService.getAllDailyPizzaSpecials();
+    public List<MatchedPizzaSpecialDTO> getAllActiveDailyPizzaSpecials() {
+        return pizzaMenuService.getAllActiveDailyPizzaSpecials();
     }
 
     @GetMapping("/pizza/specials/today")

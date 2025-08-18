@@ -16,7 +16,7 @@ public interface PizzaSpecialRepository {
 
     public long deleteAll();
     
-    public List<PizzaSpecial> getAllDailyPizzaSpecials();
+    public List<PizzaSpecial> getAllActiveDailyPizzaSpecials();
 
     public List<PizzaSpecial> getPizzaSpecialsByDay(DayOfWeek dayOfWeek);
 

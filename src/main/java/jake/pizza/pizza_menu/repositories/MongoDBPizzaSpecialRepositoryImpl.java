@@ -50,7 +50,7 @@ public class MongoDBPizzaSpecialRepositoryImpl implements PizzaSpecialRepository
     public List<PizzaSpecial> saveAll(List<PizzaSpecial> pizzaSpecialList) {
         try (ClientSession clientSession = client.startSession()) {
             return clientSession.withTransaction(() -> {
-                pizzaSpecialList.forEach(p -> p.setId(new ObjectId()));
+                pizzaSpecialList.forEach(p -> p.setId(p.getId() == null? new ObjectId(): p.getId()));
                 pizzaSpecialCollection.insertMany(clientSession, pizzaSpecialList);
                 return pizzaSpecialList;
             }, txnOptions);
@@ -66,13 +66,25 @@ public class MongoDBPizzaSpecialRepositoryImpl implements PizzaSpecialRepository
     }
 
     @Override
-    public List<PizzaSpecial> getAllDailyPizzaSpecials() {
-        return pizzaSpecialCollection.find(Filters.exists("specialDay")).into(new ArrayList<>());
+    public List<PizzaSpecial> getAllActiveDailyPizzaSpecials() {
+        return pizzaSpecialCollection.find(
+            Filters.and(
+                Filters.exists("specialDay"),
+                Filters.or(
+                    Filters.exists("expirationDate", false), Filters.eq("expirationDate", null), Filters.gt("expirationDate", new Date())
+                    )
+                )).into(new ArrayList<>());
     }
 
     @Override
     public List<PizzaSpecial> getPizzaSpecialsByDay(DayOfWeek dayOfWeek) {
-        return pizzaSpecialCollection.find(Filters.eq("specialDay", dayOfWeek)).into(new ArrayList<>());
+        return pizzaSpecialCollection.find(
+            Filters.and(
+                Filters.eq("specialDay", dayOfWeek),
+                Filters.or(
+                    Filters.exists("expirationDate", false), Filters.eq("expirationDate", null), Filters.gt("expirationDate", new Date())
+                    )
+                )).into(new ArrayList<>());
     }
 
     @Override

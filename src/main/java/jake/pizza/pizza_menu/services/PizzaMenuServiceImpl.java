@@ -1,5 +1,6 @@
 package jake.pizza.pizza_menu.services;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,10 +58,10 @@ public class PizzaMenuServiceImpl implements PizzaMenuService {
     }
 
     @Override
-    public List<MatchedPizzaSpecialDTO> getAllDailyPizzaSpecials() {
+    public List<MatchedPizzaSpecialDTO> getAllActiveDailyPizzaSpecials() {
         // TODO: I am sure there is a better way of streaming these results together into a List<MatchedPizzaSpecialDTO>. Perhaps an aggregate query.
         List<MatchedPizzaSpecialDTO> result = new ArrayList<>();
-        List<PizzaSpecialDTO> pizzaSpecialDTOList = pizzaSpecialRepository.getAllDailyPizzaSpecials()
+        List<PizzaSpecialDTO> pizzaSpecialDTOList = pizzaSpecialRepository.getAllActiveDailyPizzaSpecials()
             .stream()
             .map(PizzaSpecialDTO::new)
             .toList();

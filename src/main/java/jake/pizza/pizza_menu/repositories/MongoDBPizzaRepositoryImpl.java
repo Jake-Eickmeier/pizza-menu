@@ -54,7 +54,7 @@ public class MongoDBPizzaRepositoryImpl implements PizzaRepository {
     public List<Pizza> saveAll(List<Pizza> pizzaList) {
         try (ClientSession clientSession = client.startSession()) {
             return clientSession.withTransaction(() -> {
-                pizzaList.forEach(p -> p.setId(new ObjectId()));
+                pizzaList.forEach(p -> p.setId(p.getId() == null? new ObjectId(): p.getId()));
                 pizzaCollection.insertMany(clientSession, pizzaList);
                 return pizzaList;
             }, txnOptions);

@@ -15,7 +15,7 @@ public interface PizzaMenuService {
 
     List<MatchedPizzaSpecialDTO> getTodaysPizzaSpecials();
 
-    List<MatchedPizzaSpecialDTO> getAllDailyPizzaSpecials();
+    List<MatchedPizzaSpecialDTO> getAllActiveDailyPizzaSpecials();
 
     List<MatchedPizzaSpecialDTO> getAllActivePizzaSpecials();
 

@@ -25,9 +25,12 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
 import jakarta.annotation.PostConstruct;
+import jake.pizza.pizza_menu.dtos.MatchedPizzaSpecialDTO;
 import jake.pizza.pizza_menu.dtos.PizzaDTO;
 import jake.pizza.pizza_menu.models.Pizza;
+import jake.pizza.pizza_menu.models.PizzaSpecial;
 import jake.pizza.pizza_menu.repositories.PizzaRepository;
+import jake.pizza.pizza_menu.repositories.PizzaSpecialRepository;
 
 
 @Testcontainers
@@ -42,6 +45,9 @@ public class MenuControllerIT {
 
     @Autowired
     private PizzaRepository pizzaRepository;
+
+    @Autowired
+    private PizzaSpecialRepository pizzaSpecialRepository;
 
     @Autowired
     private MenuTestHelper menuTestHelper;
@@ -59,7 +65,7 @@ public class MenuControllerIT {
 
     @Autowired
     MenuControllerIT(MongoClient mongoClient) {
-        createPizzaCollectionIfNotPresent(mongoClient);
+        createPizzaMenuCollectionsIfNotPresent(mongoClient);
     }
 
     @PostConstruct
@@ -70,11 +76,12 @@ public class MenuControllerIT {
     @AfterEach
     void tearDown() {
         pizzaRepository.deleteAll();
+        pizzaSpecialRepository.deleteAll();
     }
 
     @DisplayName("GET /pizza/menu with 2 pizzas")
     @Test
-    void getPizzas() {
+    void getPizzas_twoPizzasPresent_returnsTwoPizzas() {
         // GIVEN
         List<Pizza> pizzas = pizzaRepository.saveAll(menuTestHelper.getListOfPizzas());
         // WHEN
@@ -89,12 +96,81 @@ public class MenuControllerIT {
                                     .containsExactlyInAnyOrderElementsOf(expected);
     }
 
-    private void createPizzaCollectionIfNotPresent(MongoClient mongoClient) {
+    @DisplayName("GET /pizza/specials/daily with 2 daily specials")
+    @Test
+    void getDailySpecials_twoActiveDailySpecialsPresent_returnsTwoSpecials() {
+        // GIVEN
+        List<Pizza> pizzas = pizzaRepository.saveAll(menuTestHelper.getListOfPizzas());
+        List<PizzaSpecial> pizzaSpecials = pizzaSpecialRepository.saveAll(menuTestHelper.getListOfAllPizzaSpecials());
+
+        // WHEN
+        ResponseEntity<List<MatchedPizzaSpecialDTO>> result = rest.exchange(serviceURL + "/pizza/specials/daily", HttpMethod.GET, null,
+                                                               new ParameterizedTypeReference<>() {
+                                                               });
+        // THEN
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<MatchedPizzaSpecialDTO> expected = List.of(
+            menuTestHelper.getMatchedCheesePizzaSpecialDTO(),
+            menuTestHelper.getMatchedPepperoniPizzaSpecialDTO()
+        );
+        assertThat(result.getBody()).usingRecursiveFieldByFieldElementComparatorIgnoringFields("id", "createdAt")
+                                    .containsExactlyInAnyOrderElementsOf(expected);
+    }
+
+    @DisplayName("GET /pizza/specials/active")
+    @Test
+    void getActiveSpecials_oneExpiredPresent_returnsOnlyActive() {
+        // GIVEN
+        List<Pizza> pizzas = pizzaRepository.saveAll(menuTestHelper.getListOfPizzas());
+        List<PizzaSpecial> pizzaSpecials = pizzaSpecialRepository.saveAll(menuTestHelper.getListOfActivePizzaSpecials());
+
+        // WHEN
+        ResponseEntity<List<MatchedPizzaSpecialDTO>> result = rest.exchange(serviceURL + "/pizza/specials/daily", HttpMethod.GET, null,
+                                                               new ParameterizedTypeReference<>() {
+                                                               });
+        // THEN
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<MatchedPizzaSpecialDTO> expected = List.of(
+            menuTestHelper.getMatchedCheesePizzaSpecialDTO(),
+            menuTestHelper.getMatchedPepperoniPizzaSpecialDTO()
+        );
+        assertThat(result.getBody()).usingRecursiveFieldByFieldElementComparatorIgnoringFields("id", "createdAt")
+                                    .containsExactlyInAnyOrderElementsOf(expected);
+
+    }
+
+    @DisplayName("GET /pizza/menu/{tag}")
+    @Test
+    void getWithVegetarianFilter_twoPizzasPresent_returnsOnlyVegetarian() {
+        // GIVEN
+        List<Pizza> pizzas = pizzaRepository.saveAll(menuTestHelper.getListOfPizzas());
+
+        // WHEN
+        ResponseEntity<List<PizzaDTO>> result = rest.exchange(serviceURL + "/pizza/menu/VEGETARIAN", HttpMethod.GET, null,
+                                                               new ParameterizedTypeReference<>() {
+                                                               });
+        // THEN
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<PizzaDTO> expected = List.of(
+            menuTestHelper.getCheesePizzaDTO()
+        );
+        assertThat(result.getBody()).usingRecursiveFieldByFieldElementComparatorIgnoringFields("id", "createdAt")
+                                    .containsExactlyInAnyOrderElementsOf(expected);
+
+    }
+
+    private void createPizzaMenuCollectionsIfNotPresent(MongoClient mongoClient) {
         // This is required because it is not possible to create a new collection within a multi-documents transaction.
         // Some tests start by inserting 2 documents with a transaction.
-        MongoDatabase db = mongoClient.getDatabase("test");
-        if (!db.listCollectionNames().into(new ArrayList<>()).contains("pizzaMenu")) {
-            db.createCollection("pizzaMenu");
+        MongoDatabase pizzaMenu = mongoClient.getDatabase("test");
+        if (!pizzaMenu.listCollectionNames().into(new ArrayList<>()).contains("pizzaMenu")) {
+            pizzaMenu.createCollection("pizzaMenu");
         }
+        MongoDatabase pizzaSpecials = mongoClient.getDatabase("test");
+        if (!pizzaSpecials.listCollectionNames().into(new ArrayList<>()).contains("pizzaSpecials")) {
+            pizzaSpecials.createCollection("pizzaSpecials");
+        }
+
     }
+    
 }
